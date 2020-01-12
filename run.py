@@ -61,7 +61,7 @@ def get_current_sr(account):
 
 if __name__ == "__main__":
 
-    print "Getting accounts..."
+    print("Getting accounts...")
 
     accounts = get_accounts()
 
@@ -77,12 +77,12 @@ if __name__ == "__main__":
 
     data = []
     for account in accounts:
-        data.append([account.email, account.battletag, 
+        data.append([account.email, account.battletag,
         (account.tank_rating if account.tank_rating else 'N/A'),
         (account.damage_rating if account.damage_rating else 'N/A'),
         (account.support_rating if account.support_rating else 'N/A')])
 
-    print ''
-    print tabulate(data, headers=['Email', 'BattleTag', 'Tank', 'Damage', 'Support'])
+    print ('')
+    print (tabulate(data, headers=['Email', 'BattleTag', 'Tank', 'Damage', 'Support']))
 
-    raw_input()
+    input()
