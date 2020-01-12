@@ -19,7 +19,9 @@ class Account:
   def __init__(self, email, battletag):
     self.email = email
     self.battletag = battletag
-    self.sr = None
+    self.tank_rating = None
+    self.damage_rating = None
+    self.support_rating = None
 
 def get_accounts():
     accounts = []
@@ -45,10 +47,17 @@ def get_current_sr(account):
     profile_response = requests.get(url, timeout=5)
     soup = BeautifulSoup(profile_response.content, "html.parser")
 
-    divs = soup.findAll("div", {"class": "competitive-rank"})
+    tank_result = soup.find("div", {"data-ow-tooltip-text" : "Tank Skill Rating"})
+    if tank_result:
+        account.tank_rating = tank_result.nextSibling.text
 
-    if len(divs) > 0:
-        account.sr = divs[0].text
+    damage_result = soup.find("div", {"data-ow-tooltip-text" : "Damage Skill Rating"})
+    if damage_result:
+        account.damage_rating = damage_result.nextSibling.text
+
+    support_result = soup.find("div", {"data-ow-tooltip-text" : "Support Skill Rating"})
+    if support_result:
+        account.support_rating = support_result.nextSibling.text
 
 if __name__ == "__main__":
 
@@ -69,9 +78,11 @@ if __name__ == "__main__":
     data = []
     for account in accounts:
         data.append([account.email, account.battletag, 
-            (account.sr if account.sr else 'N/A')])
+        (account.tank_rating if account.tank_rating else 'N/A'),
+        (account.damage_rating if account.damage_rating else 'N/A'),
+        (account.support_rating if account.support_rating else 'N/A')])
 
     print ''
-    print tabulate(data, headers=['Email', 'BattleTag', 'SR'])
+    print tabulate(data, headers=['Email', 'BattleTag', 'Tank', 'Damage', 'Support'])
 
     raw_input()
