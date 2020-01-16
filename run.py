@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 
 # Create accounts.txt file and enter account information, one per line
-# ex: email@gmail.com:Syntack#11114
+# ex: email@gmail.com:Syntack#11114:Country:Password
 
 # Windows Note:
 # May need to change CMD code page to UTF-8 in Windows
@@ -15,20 +15,22 @@ from prestige import PRESTIGE_BORDERS, PRESTIGE_STARS
 from tabulate import tabulate
 from threading import Thread
 
+
 class Account:
 
-  def __init__(self, email, battletag):
-    self.email = email
-    self.battletag = battletag
-    self.level = None
-    self.tank_rating = None
-    self.damage_rating = None
-    self.support_rating = None
+    def __init__(self, email, battletag):
+        self.email = email
+        self.battletag = battletag
+        self.level = None
+        self.tank_rating = None
+        self.damage_rating = None
+        self.support_rating = None
+
 
 def get_accounts():
     accounts = []
 
-    with io.open('accounts.txt','r', encoding='utf-8') as f:
+    with io.open('accounts.txt', 'r', encoding='utf-8') as f:
         for line in f:
             x = line.split(':')
             email = x[0]
@@ -37,6 +39,7 @@ def get_accounts():
             accounts.append(account)
 
     return accounts
+
 
 def get_prestige_level(level, border_hash, star_hash):
     prestige = 0
@@ -49,6 +52,7 @@ def get_prestige_level(level, border_hash, star_hash):
 
     return level + (prestige * 100)
 
+
 def get_account_stats(account):
 
     x = account.battletag.split('#')
@@ -60,10 +64,10 @@ def get_account_stats(account):
     profile_response = requests.get(url, timeout=5)
     soup = BeautifulSoup(profile_response.content, "html.parser")
 
-    level_div = soup.find("div", {"class" : "player-level"})
+    level_div = soup.find("div", {"class": "player-level"})
     level = int(level_div.text)
     border_hash = level_div['style'].rpartition('/')[-1][:-6]
-    star_div = level_div.find('div', {"class" : "player-rank"})
+    star_div = level_div.find('div', {"class": "player-rank"})
 
     if star_div:
         star_hash = star_div['style'].rpartition('/')[-1][:-6]
@@ -71,30 +75,35 @@ def get_account_stats(account):
         star_hash = None
 
     account.level = get_prestige_level(level, border_hash, star_hash)
-   
-    tank_result = soup.find("div", {"data-ow-tooltip-text" : "Tank Skill Rating"})
+
+    tank_result = soup.find(
+        "div", {"data-ow-tooltip-text": "Tank Skill Rating"})
     if tank_result:
         account.tank_rating = tank_result.nextSibling.text
 
-    damage_result = soup.find("div", {"data-ow-tooltip-text" : "Damage Skill Rating"})
+    damage_result = soup.find(
+        "div", {"data-ow-tooltip-text": "Damage Skill Rating"})
     if damage_result:
         account.damage_rating = damage_result.nextSibling.text
 
-    support_result = soup.find("div", {"data-ow-tooltip-text" : "Support Skill Rating"})
+    support_result = soup.find(
+        "div", {"data-ow-tooltip-text": "Support Skill Rating"})
     if support_result:
         account.support_rating = support_result.nextSibling.text
+
 
 def get_avg_sr(accounts, role):
     placed_accts = 0
     total_sr = 0
 
-    for account in accounts:     
+    for account in accounts:
         sr = getattr(account, role + "_rating")
         if sr:
             placed_accts += 1
             total_sr += int(sr)
 
     return int(total_sr / placed_accts)
+
 
 if __name__ == "__main__":
 
@@ -115,16 +124,18 @@ if __name__ == "__main__":
     data = []
     for account in accounts:
         data.append([account.email, account.battletag, account.level,
-        (account.tank_rating if account.tank_rating else '-'),
-        (account.damage_rating if account.damage_rating else '-'),
-        (account.support_rating if account.support_rating else '-')])
+                     (account.tank_rating if account.tank_rating else '-'),
+                     (account.damage_rating if account.damage_rating else '-'),
+                     (account.support_rating if account.support_rating else '-')])
 
     tabulate.WIDE_CHARS_MODE = False
-    
-    print('')
-    print(tabulate(data, headers=['Email', 'BattleTag', 'Level', 'Tank', 'Damage', 'Support'], showindex="always"))
 
     print('')
-    print(tabulate([[sum(a.level for a in accounts), get_avg_sr(accounts, "tank"), get_avg_sr(accounts, "damage"), get_avg_sr(accounts, "support")]], headers=['Total Levels', 'Tank Avg', 'Damage Avg', 'Support Avg']))
+    print(tabulate(data, headers=[
+          'Email', 'BattleTag', 'Level', 'Tank', 'Damage', 'Support'], showindex="always"))
+
+    print('')
+    print(tabulate([[sum(a.level for a in accounts), get_avg_sr(accounts, "tank"), get_avg_sr(accounts, "damage"), get_avg_sr(
+        accounts, "support")]], headers=['Total Levels', 'Tank Avg', 'Damage Avg', 'Support Avg']))
 
     input()
