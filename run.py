@@ -8,7 +8,7 @@
 # May need to change CMD code page to UTF-8 in Windows
 # As well as set PYTHONIOENCODING=UTF-8
 
-import io
+import json
 import requests
 from bs4 import BeautifulSoup
 from prestige import PRESTIGE_BORDERS, PRESTIGE_STARS
@@ -18,9 +18,11 @@ from threading import Thread
 
 class Account:
 
-    def __init__(self, email, battletag):
+    def __init__(self, email, battletag, country, password):
         self.email = email
         self.battletag = battletag
+        self.country = country
+        self.password = password
         self.level = None
         self.tank_rating = None
         self.damage_rating = None
@@ -30,12 +32,16 @@ class Account:
 def get_accounts():
     accounts = []
 
-    with io.open('accounts.txt', 'r', encoding='utf-8') as f:
-        for line in f:
-            x = line.split(':')
-            email = x[0]
-            btag = x[1]
-            account = Account(email, btag)
+    with open('accounts.json', encoding='utf-8') as json_file:
+        data = json.load(json_file)
+        for a in data:
+
+            email = a['email']
+            battletag = a['battletag']
+            country = a['country']
+            password = a['password']
+
+            account = Account(email, battletag, country, password)
             accounts.append(account)
 
     return accounts
