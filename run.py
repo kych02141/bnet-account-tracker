@@ -84,6 +84,18 @@ def get_account_stats(account):
     if support_result:
         account.support_rating = support_result.nextSibling.text
 
+def get_avg_sr(accounts, role):
+    placed_accts = 0
+    total_sr = 0
+
+    for account in accounts:     
+        sr = getattr(account, role + "_rating")
+        if sr:
+            placed_accts += 1
+            total_sr += int(sr)
+
+    return int(total_sr / placed_accts)
+
 if __name__ == "__main__":
 
     print("Getting accounts...")
@@ -111,5 +123,8 @@ if __name__ == "__main__":
     
     print('')
     print(tabulate(data, headers=['Email', 'BattleTag', 'Level', 'Tank', 'Damage', 'Support'], showindex="always"))
+
+    print('')
+    print(tabulate([[sum(a.level for a in accounts), get_avg_sr(accounts, "tank"), get_avg_sr(accounts, "damage"), get_avg_sr(accounts, "support")]], headers=['Total Levels', 'Tank Avg', 'Damage Avg', 'Support Avg']))
 
     input()
