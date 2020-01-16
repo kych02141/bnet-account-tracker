@@ -107,6 +107,8 @@ if __name__ == "__main__":
         (account.damage_rating if account.damage_rating else 'N/A'),
         (account.support_rating if account.support_rating else 'N/A')])
 
+    tabulate.WIDE_CHARS_MODE = False
+    
     print('')
     print(tabulate(data, headers=['Email', 'BattleTag', 'Level', 'Tank', 'Damage', 'Support']))
 
