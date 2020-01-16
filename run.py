@@ -129,7 +129,7 @@ if __name__ == "__main__":
 
     data = []
     for account in accounts:
-        data.append([account.email, account.battletag, account.level,
+        data.append([account.email, account.battletag, account.country, account.level,
                      (account.tank_rating if account.tank_rating else '-'),
                      (account.damage_rating if account.damage_rating else '-'),
                      (account.support_rating if account.support_rating else '-')])
@@ -138,7 +138,7 @@ if __name__ == "__main__":
 
     print('')
     print(tabulate(data, headers=[
-          'Email', 'BattleTag', 'Level', 'Tank', 'Damage', 'Support'], showindex="always"))
+          'Email', 'BattleTag', 'Country', 'Level', 'Tank', 'Damage', 'Support'], showindex="always"))
 
     print('')
     print(tabulate([[sum(a.level for a in accounts), get_avg_sr(accounts, "tank"), get_avg_sr(accounts, "damage"), get_avg_sr(
