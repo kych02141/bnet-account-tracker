@@ -110,6 +110,6 @@ if __name__ == "__main__":
     tabulate.WIDE_CHARS_MODE = False
     
     print('')
-    print(tabulate(data, headers=['Email', 'BattleTag', 'Level', 'Tank', 'Damage', 'Support']))
+    print(tabulate(data, headers=['Email', 'BattleTag', 'Level', 'Tank', 'Damage', 'Support'], showindex="always"))
 
     input()
