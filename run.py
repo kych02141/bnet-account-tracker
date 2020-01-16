@@ -103,9 +103,9 @@ if __name__ == "__main__":
     data = []
     for account in accounts:
         data.append([account.email, account.battletag, account.level,
-        (account.tank_rating if account.tank_rating else 'N/A'),
-        (account.damage_rating if account.damage_rating else 'N/A'),
-        (account.support_rating if account.support_rating else 'N/A')])
+        (account.tank_rating if account.tank_rating else '-'),
+        (account.damage_rating if account.damage_rating else '-'),
+        (account.support_rating if account.support_rating else '-')])
 
     tabulate.WIDE_CHARS_MODE = False
     
