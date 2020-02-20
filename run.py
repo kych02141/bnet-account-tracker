@@ -26,6 +26,7 @@
 
 import json
 import requests
+import urllib.parse
 from bs4 import BeautifulSoup
 from prestige import PRESTIGE_BORDERS, PRESTIGE_STARS
 from tabulate import tabulate
@@ -40,6 +41,7 @@ class Account:
         self.country = country
         self.password = password
         self.level = None
+        self.public = False
         self.tank_rating = None
         self.damage_rating = None
         self.support_rating = None
@@ -78,7 +80,7 @@ def get_prestige_level(level, border_hash, star_hash):
 def get_account_stats(account):
 
     x = account.battletag.split('#')
-    name = x[0]
+    name = urllib.parse.quote_plus(x[0])
     id = x[1]
 
     url = "https://playoverwatch.com/en-us/career/pc/%s-%s" % (name, id)
