@@ -4,7 +4,7 @@
 # Rename accounts.example.json to accounts.json
 #
 # Example format:
-# 
+#
 # [
 #     {
 #         "email": "bnetplayer1@gmail.com",
@@ -31,6 +31,24 @@ from bs4 import BeautifulSoup
 from prestige import PRESTIGE_BORDERS, PRESTIGE_STARS
 from tabulate import tabulate
 from threading import Thread
+
+config = None
+with open('config.json') as json_file:
+    config = json.load(json_file)
+
+
+def mask_battletag(battletag):
+    split = account.battletag.split('#')
+    name = split[0]
+    id = split[1]
+    return "%s#%s%s%s" % (name, id[0][:1], '*' * (len(id) - 2), id[-1:])
+
+
+def mask_email(email):
+    split = email.split('@')
+    username = split[0]
+    domain = split[1]
+    return "%s%s%s@%s" % (username[0][:1], '*' * (len(username) - 2), username[-1:], domain)
 
 
 class Account:
@@ -147,7 +165,10 @@ if __name__ == "__main__":
 
     data = []
     for account in accounts:
-        data.append([account.email, account.battletag, account.country, account.level,
+        data.append([mask_email(account.email) if config['mask_emails'] else account.email,
+                     mask_battletag(
+                         account.battletag) if config['mask_battletags'] else account.battletag,
+                     account.country, account.level,
                      (account.tank_rating if account.tank_rating else '-'),
                      (account.damage_rating if account.damage_rating else '-'),
                      (account.support_rating if account.support_rating else '-')])
