@@ -53,7 +53,8 @@ def mask_email(email):
 
 class Account:
 
-    def __init__(self, email, battletag, country, password):
+    def __init__(self, id, email, battletag, country, password):
+        self.id = id
         self.email = email
         self.battletag = battletag
         self.country = country
@@ -70,6 +71,7 @@ def get_accounts():
 
     with open('accounts.json', encoding='utf-8') as json_file:
         data = json.load(json_file)
+        account_index = 1
         for a in data:
 
             email = a['email']
@@ -77,8 +79,9 @@ def get_accounts():
             country = a['country']
             password = a['password']
 
-            account = Account(email, battletag, country, password)
+            account = Account(account_index, email, battletag, country, password)
             accounts.append(account)
+            account_index = account_index + 1
 
     return accounts
 
@@ -165,19 +168,19 @@ if __name__ == "__main__":
 
     data = []
     for account in accounts:
-        data.append([mask_email(account.email) if config['mask_emails'] else account.email,
+        data.append([account.id, mask_email(account.email) if config['mask_emails'] else account.email,
                      mask_battletag(
-                         account.battletag) if config['mask_battletags'] else account.battletag,
-                     account.country, account.level,
-                     (account.tank_rating if account.tank_rating else '-'),
-                     (account.damage_rating if account.damage_rating else '-'),
-                     (account.support_rating if account.support_rating else '-')])
+            account.battletag) if config['mask_battletags'] else account.battletag,
+            account.country, account.level,
+            (account.tank_rating if account.tank_rating else '-'),
+            (account.damage_rating if account.damage_rating else '-'),
+            (account.support_rating if account.support_rating else '-')])
 
     tabulate.WIDE_CHARS_MODE = False
 
     print('')
-    print(tabulate(data, headers=[
-          'Email', 'BattleTag', 'Country', 'Level', 'Tank', 'Damage', 'Support'], showindex="always"))
+    print(tabulate(data, headers=['',
+                                  'Email', 'BattleTag', 'Country', 'Level', 'Tank', 'Damage', 'Support']))
 
     print('')
     print(tabulate([[sum(a.level for a in accounts), get_avg_sr(accounts, "tank"), get_avg_sr(accounts, "damage"), get_avg_sr(
