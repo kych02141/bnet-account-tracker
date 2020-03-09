@@ -25,7 +25,9 @@
 # As well as set PYTHONIOENCODING=UTF-8
 
 import json
+import pyperclip
 import requests
+import time
 import urllib.parse
 from bs4 import BeautifulSoup
 from prestige import PRESTIGE_BORDERS, PRESTIGE_STARS
@@ -150,6 +152,64 @@ def get_avg_sr(accounts, role):
     return int(total_sr / placed_accts)
 
 
+def print_table():
+    print('')
+    print(tabulate(data, headers=['',
+                                  'Email', 'BattleTag', 'Country', 'Level', 'Tank', 'Damage', 'Support']))
+
+    print('')
+    print(tabulate([[sum(a.level for a in accounts), get_avg_sr(accounts, "tank"), get_avg_sr(accounts, "damage"), get_avg_sr(
+        accounts, "support")]], headers=['Total Levels', 'Tank Avg', 'Damage Avg', 'Support Avg']))
+
+def prompt_action():
+    valid_id = False
+    while not valid_id:     
+        try:
+            id = int(input("\nSelect an account by the ID: "))
+            account = accounts[id - 1]
+            valid_id = True
+        except IndexError:
+            pass
+        except ValueError:
+            pass
+
+    actions = [
+        "[1] Copy email to clipboard",
+        "[2] Copy password to clipboard",
+        "[3] Copy battletag to clipboard",
+        "[4] Go back"
+    ]
+
+    for a in actions:
+        print(a)
+    print()
+
+    valid_action = False
+    while not valid_action:     
+        try:
+            action = int(input("What would you like to do with this account: "))
+            actions[action - 1]
+            valid_action = True
+        except IndexError:
+            pass
+        except ValueError:
+            pass        
+
+    if action == 1:
+        pyperclip.copy(account.email)
+        print("Email copied to clipboard!")
+    if action == 2:
+        pyperclip.copy(account.password)
+        print("Password copied to clipboard!")
+    if action == 3:
+        pyperclip.copy(account.battletag)
+        print("Battletag copied to clipboard!")
+    if action == 4:
+        pass
+
+    print("Returning to accounts...")
+    time.sleep(0.5)
+
 if __name__ == "__main__":
 
     print("Getting accounts...")
@@ -178,12 +238,7 @@ if __name__ == "__main__":
 
     tabulate.WIDE_CHARS_MODE = False
 
-    print('')
-    print(tabulate(data, headers=['',
-                                  'Email', 'BattleTag', 'Country', 'Level', 'Tank', 'Damage', 'Support']))
-
-    print('')
-    print(tabulate([[sum(a.level for a in accounts), get_avg_sr(accounts, "tank"), get_avg_sr(accounts, "damage"), get_avg_sr(
-        accounts, "support")]], headers=['Total Levels', 'Tank Avg', 'Damage Avg', 'Support Avg']))
-
-    input()
+    while True:
+        print_table()
+        time.sleep(0.5)
+        prompt_action()
