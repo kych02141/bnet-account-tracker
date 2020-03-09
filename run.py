@@ -50,7 +50,10 @@ def mask_email(email):
     split = email.split('@')
     username = split[0]
     domain = split[1]
-    return "%s%s%s@%s" % (username[0][:1], '*' * (len(username) - 2), username[-1:], domain)
+    return "%s%s%s@%s" % (username[0][:1],
+                          '*' * (len(username) - 2),
+                          username[-1:],
+                          domain)
 
 
 class Account:
@@ -81,7 +84,12 @@ def get_accounts():
             country = a['country']
             password = a['password']
 
-            account = Account(account_index, email, battletag, country, password)
+            account = Account(
+                account_index,
+                email,
+                battletag,
+                country,
+                password)
             accounts.append(account)
             account_index = account_index + 1
 
@@ -154,16 +162,36 @@ def get_avg_sr(accounts, role):
 
 def print_table():
     print('')
-    print(tabulate(data, headers=['',
-                                  'Email', 'BattleTag', 'Country', 'Level', 'Tank', 'Damage', 'Support']))
+    print(
+        tabulate(
+            data,
+            headers=[
+                '',
+                'Email',
+                'BattleTag',
+                'Country',
+                'Level',
+                'Tank',
+                'Damage',
+                'Support']))
 
     print('')
-    print(tabulate([[sum(a.level for a in accounts), get_avg_sr(accounts, "tank"), get_avg_sr(accounts, "damage"), get_avg_sr(
-        accounts, "support")]], headers=['Total Levels', 'Tank Avg', 'Damage Avg', 'Support Avg']))
+    print(tabulate([[sum(a.level for a in accounts),
+                     get_avg_sr(accounts,
+                                "tank"),
+                     get_avg_sr(accounts,
+                                "damage"),
+                     get_avg_sr(accounts,
+                                "support")]],
+                   headers=['Total Levels',
+                            'Tank Avg',
+                            'Damage Avg',
+                            'Support Avg']))
+
 
 def prompt_action():
     valid_id = False
-    while not valid_id:     
+    while not valid_id:
         try:
             id = int(input("\nSelect an account by the ID: "))
             account = accounts[id - 1]
@@ -185,15 +213,16 @@ def prompt_action():
     print()
 
     valid_action = False
-    while not valid_action:     
+    while not valid_action:
         try:
-            action = int(input("What would you like to do with this account: "))
+            action = int(
+                input("What would you like to do with this account: "))
             actions[action - 1]
             valid_action = True
         except IndexError:
             pass
         except ValueError:
-            pass        
+            pass
 
     if action == 1:
         pyperclip.copy(account.email)
@@ -209,6 +238,7 @@ def prompt_action():
 
     print("Returning to accounts...")
     time.sleep(0.5)
+
 
 if __name__ == "__main__":
 
@@ -228,13 +258,18 @@ if __name__ == "__main__":
 
     data = []
     for account in accounts:
-        data.append([account.id, mask_email(account.email) if config['mask_emails'] else account.email,
-                     mask_battletag(
-            account.battletag) if config['mask_battletags'] else account.battletag,
-            account.country, account.level,
-            (account.tank_rating if account.tank_rating else '-'),
-            (account.damage_rating if account.damage_rating else '-'),
-            (account.support_rating if account.support_rating else '-')])
+        data.append(
+            [
+                account.id,
+                mask_email(
+                    account.email) if config['mask_emails'] else account.email,
+                mask_battletag(
+                    account.battletag) if config['mask_battletags'] else account.battletag,
+                account.country,
+                account.level,
+                (account.tank_rating if account.tank_rating else '-'),
+                (account.damage_rating if account.damage_rating else '-'),
+                (account.support_rating if account.support_rating else '-')])
 
     tabulate.WIDE_CHARS_MODE = False
 
