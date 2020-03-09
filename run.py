@@ -38,7 +38,7 @@ with open('config.json') as json_file:
 
 
 def mask_battletag(battletag):
-    split = account.battletag.split('#')
+    split = battletag.split('#')
     name = split[0]
     id = split[1]
     return "%s#%s%s%s" % (name, id[0][:1], '*' * (len(id) - 2), id[-1:])
