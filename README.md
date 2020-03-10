@@ -8,6 +8,7 @@ Requirements:
 ```
 pip install tabulate
 pip install wcwidth
+pip install pyperclip
 ```
 
 Running via the command prompt might not display certain characters properly, so the Powershell script is recommended.
