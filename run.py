@@ -1,29 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Rename accounts.example.json to accounts.json
-#
-# Example format:
-#
-# [
-#     {
-#         "email": "bnetplayer1@gmail.com",
-#         "battletag": "bnetplayer1#11254",
-#         "country": "United States",
-#         "password": "X6K.qV:v^Fk43&2-"
-#     },
-#     {
-#         "email": "bnetplayer2@gmail.com",
-#         "battletag": "bnetplayer#1916",
-#         "country": "Japan",
-#         "password": "{FZAfrW)25kNU;P#"
-#     }
-# ]
-
-# Windows Note:
-# May need to change CMD code page to UTF-8 in Windows
-# As well as set PYTHONIOENCODING=UTF-8
-
 import json
 import pyperclip
 import requests
