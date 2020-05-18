@@ -136,6 +136,7 @@ def print_table():
                 'Email',
                 'BattleTag',
                 'Country',
+                'Created',
                 'Level',
                 'Tank',
                 'Damage',
@@ -232,6 +233,7 @@ if __name__ == "__main__":
                 mask_battletag(
                     account.battletag) if config['mask_battletags'] else account.battletag,
                 account.country,
+                account.created,
                 account.level,
                 (account.tank_rating if account.tank_rating else '-'),
                 (account.damage_rating if account.damage_rating else '-'),
@@ -243,3 +245,4 @@ if __name__ == "__main__":
         print_table()
         time.sleep(0.5)
         prompt_action()
+
