@@ -123,7 +123,10 @@ def get_avg_sr(accounts, role):
             placed_accts += 1
             total_sr += int(sr)
 
-    return int(total_sr / placed_accts)
+    if placed_accts > 0:
+        return int(total_sr / placed_accts)
+    else:
+        return '-'
 
 
 def print_table():
