@@ -7,12 +7,13 @@ import requests
 import time
 import urllib.parse
 from bs4 import BeautifulSoup
+from account import Account
 from prestige import PRESTIGE_BORDERS, PRESTIGE_STARS
 from tabulate import tabulate
 from threading import Thread
 
 config = None
-with open('config.json') as json_file:
+with open('config/config.json') as json_file:
     config = json.load(json_file)
 
 
@@ -32,26 +33,10 @@ def mask_email(email):
                           username[-1:],
                           domain)
 
-
-class Account:
-
-    def __init__(self, id, email, battletag, country, password):
-        self.id = id
-        self.email = email
-        self.battletag = battletag
-        self.country = country
-        self.password = password
-        self.level = None
-        self.public = False
-        self.tank_rating = None
-        self.damage_rating = None
-        self.support_rating = None
-
-
 def get_accounts():
     accounts = []
 
-    with open('accounts.json', encoding='utf-8') as json_file:
+    with open('config/accounts.json', encoding='utf-8') as json_file:
         data = json.load(json_file)
         account_index = 1
         for a in data:
@@ -60,13 +45,15 @@ def get_accounts():
             battletag = a['battletag']
             country = a['country']
             password = a['password']
+            created = a['created']
 
             account = Account(
                 account_index,
                 email,
                 battletag,
                 country,
-                password)
+                password,
+                created)
             accounts.append(account)
             account_index = account_index + 1
 
@@ -97,6 +84,7 @@ def get_account_stats(account):
     soup = BeautifulSoup(profile_response.content, "html.parser")
 
     level_div = soup.find("div", {"class": "player-level"})
+
     level = int(level_div.text)
     border_hash = level_div['style'].rpartition('/')[-1][:-6]
     star_div = level_div.find('div', {"class": "player-rank"})
@@ -122,6 +110,7 @@ def get_account_stats(account):
         "div", {"data-ow-tooltip-text": "Support Skill Rating"})
     if support_result:
         account.support_rating = support_result.nextSibling.text
+
 
 
 def get_avg_sr(accounts, role):

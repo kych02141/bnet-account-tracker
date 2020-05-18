@@ -1,1 +1,1 @@
-python run.py
+python src/run.py

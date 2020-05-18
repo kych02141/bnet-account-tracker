@@ -2,6 +2,6 @@
 
 chcp 65001
 set PYTHONIOENCODING=UTF-8
-python run.py
+python src/run.py
 
 pause
