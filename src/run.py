@@ -83,35 +83,37 @@ def get_account_stats(account):
     url = "https://playoverwatch.com/en-us/career/pc/%s-%s" % (name, id)
 
     profile_response = requests.get(url, timeout=5)
+    
     soup = BeautifulSoup(profile_response.content, "html.parser")
 
-    level_div = soup.find("div", {"class": "player-level"})
+    if not soup.findAll(text="Profile Not Found"):
+        level_div = soup.find("div", {"class": "player-level"})
 
-    level = int(level_div.text)
-    border_hash = level_div['style'].rpartition('/')[-1][:-6]
-    star_div = level_div.find('div', {"class": "player-rank"})
+        level = int(level_div.text)
+        border_hash = level_div['style'].rpartition('/')[-1][:-6]
+        star_div = level_div.find('div', {"class": "player-rank"})
 
-    if star_div:
-        star_hash = star_div['style'].rpartition('/')[-1][:-6]
-    else:
-        star_hash = None
+        if star_div:
+            star_hash = star_div['style'].rpartition('/')[-1][:-6]
+        else:
+            star_hash = None
 
-    account.level = get_prestige_level(level, border_hash, star_hash)
+        account.level = get_prestige_level(level, border_hash, star_hash)
 
-    tank_result = soup.find(
-        "div", {"data-ow-tooltip-text": "Tank Skill Rating"})
-    if tank_result:
-        account.tank_rating = tank_result.nextSibling.text
+        tank_result = soup.find(
+            "div", {"data-ow-tooltip-text": "Tank Skill Rating"})
+        if tank_result:
+            account.tank_rating = tank_result.nextSibling.text
 
-    damage_result = soup.find(
-        "div", {"data-ow-tooltip-text": "Damage Skill Rating"})
-    if damage_result:
-        account.damage_rating = damage_result.nextSibling.text
+        damage_result = soup.find(
+            "div", {"data-ow-tooltip-text": "Damage Skill Rating"})
+        if damage_result:
+            account.damage_rating = damage_result.nextSibling.text
 
-    support_result = soup.find(
-        "div", {"data-ow-tooltip-text": "Support Skill Rating"})
-    if support_result:
-        account.support_rating = support_result.nextSibling.text
+        support_result = soup.find(
+            "div", {"data-ow-tooltip-text": "Support Skill Rating"})
+        if support_result:
+            account.support_rating = support_result.nextSibling.text
 
 
 
@@ -149,7 +151,7 @@ def print_table():
                 'Support']))
 
     print('')
-    print(tabulate([[sum(a.level for a in accounts),
+    print(tabulate([[sum(a.level if a.level is not None else 0 for a in accounts),
                      get_avg_sr(accounts,
                                 "tank"),
                      get_avg_sr(accounts,
