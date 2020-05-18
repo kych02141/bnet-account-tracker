@@ -46,6 +46,7 @@ def get_accounts():
             country = a['country']
             password = a['password']
             created = a['created']
+            sms_protected = a['sms_protected']
 
             account = Account(
                 account_index,
@@ -53,7 +54,8 @@ def get_accounts():
                 battletag,
                 country,
                 password,
-                created)
+                created,
+                sms_protected)
             accounts.append(account)
             account_index = account_index + 1
 
@@ -140,6 +142,7 @@ def print_table():
                 'BattleTag',
                 'Country',
                 'Created',
+                'SMS',
                 'Level',
                 'Tank',
                 'Damage',
@@ -237,6 +240,7 @@ if __name__ == "__main__":
                     account.battletag) if config['mask_battletags'] else account.battletag,
                 account.country,
                 account.created,
+                'Yes' if account.sms_protected else 'No',
                 account.level,
                 (account.tank_rating if account.tank_rating else '-'),
                 (account.damage_rating if account.damage_rating else '-'),
