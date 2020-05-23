@@ -1,4 +1,15 @@
 {
     "mask_battletags": false,
-    "mask_emails": false
+    "mask_emails": false,
+    "columns": {
+        "email": true,
+        "battletag": true,
+        "country": true,
+        "created": true,
+        "sms": true,
+        "level": true,
+        "tank": true,
+        "damage": true,
+        "support": true
+    }
 }

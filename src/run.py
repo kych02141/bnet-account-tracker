@@ -134,22 +134,30 @@ def get_avg_sr(accounts, role):
 
 
 def print_table():
-    print('')
-    print(
-        tabulate(
-            data,
-            headers=[
-                '',
-                'Email',
-                'BattleTag',
-                'Country',
-                'Created',
-                'SMS',
-                'Level',
-                'Tank',
-                'Damage',
-                'Support']))
 
+    headers = ['']
+
+    if config['columns']['email']:
+        headers.append('Email')
+    if config['columns']['battletag']:
+        headers.append('BattleTag')
+    if config['columns']['country']:
+        headers.append('Country')
+    if config['columns']['created']:
+        headers.append('Created')
+    if config['columns']['sms']:
+        headers.append('SMS')
+    if config['columns']['level']:
+        headers.append('Level')
+    if config['columns']['tank']:
+        headers.append('Tank')
+    if config['columns']['damage']:
+        headers.append('Damage')
+    if config['columns']['support']:
+        headers.append('Support')
+
+    print('')
+    print(tabulate(data, headers=headers))
     print('')
     print(tabulate([[sum(a.level if a.level is not None else 0 for a in accounts),
                      get_avg_sr(accounts,
@@ -233,20 +241,31 @@ if __name__ == "__main__":
 
     data = []
     for account in accounts:
-        data.append(
-            [
-                account.id,
-                mask_email(
-                    account.email) if config['mask_emails'] else account.email,
-                mask_battletag(
-                    account.battletag) if config['mask_battletags'] else account.battletag,
-                account.country,
-                account.created,
-                'Yes' if account.sms_protected else 'No',
-                account.level,
-                (account.tank_rating if account.tank_rating else '-'),
-                (account.damage_rating if account.damage_rating else '-'),
-                (account.support_rating if account.support_rating else '-')])
+
+        row_data = []
+
+        row_data.append(account.id)
+
+        if config['columns']['email']:
+            row_data.append(mask_email(account.email) if config['mask_emails'] else account.email)
+        if config['columns']['battletag']:
+            row_data.append(mask_battletag(account.battletag) if config['mask_battletags'] else account.battletag)
+        if config['columns']['country']:
+            row_data.append(account.country)
+        if config['columns']['created']:
+            row_data.append(account.created)
+        if config['columns']['sms']:
+            row_data.append('Yes' if account.sms_protected else 'No')
+        if config['columns']['level']:
+            row_data.append(account.level)
+        if config['columns']['tank']:
+            row_data.append(account.tank_rating if account.tank_rating else '-')
+        if config['columns']['damage']:
+            row_data.append(account.damage_rating if account.damage_rating else '-')
+        if config['columns']['support']:
+            row_data.append(account.support_rating if account.support_rating else '-')
+
+        data.append(row_data)
 
     tabulate.WIDE_CHARS_MODE = False
 
