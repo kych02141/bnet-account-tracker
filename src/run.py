@@ -6,8 +6,8 @@ import pyperclip
 import requests
 import time
 import urllib.parse
+from account import Account, BanStatus
 from bs4 import BeautifulSoup
-from account import Account
 from prestige import PRESTIGE_BORDERS, PRESTIGE_STARS
 from tabulate import tabulate
 from threading import Thread
@@ -41,21 +41,17 @@ def get_accounts():
         account_index = 1
         for a in data:
 
-            email = a['email']
-            battletag = a['battletag']
-            country = a['country']
-            password = a['password']
-            created = a['created']
-            sms_protected = a['sms_protected']
-
             account = Account(
                 account_index,
-                email,
-                battletag,
-                country,
-                password,
-                created,
-                sms_protected)
+                a['email'],
+                a['battletag'],
+                a['country'],
+                a['password'],
+                a['created'],
+                a['sms_protected'],
+                BanStatus(a['ban_status']['banned'],
+                a['ban_status']['permanent'],
+                a['ban_status']['expires']))
             accounts.append(account)
             account_index = account_index + 1
 
@@ -147,6 +143,8 @@ def print_table():
         headers.append('Created')
     if config['columns']['sms']:
         headers.append('SMS')
+    if config['columns']['banned']:
+        headers.append('Banned')
     if config['columns']['level']:
         headers.append('Level')
     if config['columns']['tank']:
@@ -256,6 +254,14 @@ if __name__ == "__main__":
             row_data.append(account.created)
         if config['columns']['sms']:
             row_data.append('Yes' if account.sms_protected else 'No')
+        if config['columns']['banned']:
+            msg = 'Yes' if account.ban_status.banned else 'No'
+            if account.ban_status.banned:
+                if account.ban_status.permanent:
+                    msg = "%s (Permanent)" % (msg)
+                else:
+                    msg = "%s (%s)" % (msg, account.ban_status.get_expiration().strftime(config['date_format']))
+            row_data.append(msg)
         if config['columns']['level']:
             row_data.append(account.level)
         if config['columns']['tank']:

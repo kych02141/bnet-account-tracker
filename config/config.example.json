@@ -7,9 +7,11 @@
         "country": true,
         "created": true,
         "sms": true,
+        "banned": true,
         "level": true,
         "tank": true,
         "damage": true,
         "support": true
-    }
+    },
+    "date_format": "%m/%d/%Y, %H:%M"
 }
