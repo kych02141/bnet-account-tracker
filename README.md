@@ -10,6 +10,8 @@ pip install tabulate
 pip install wcwidth
 pip install pyperclip
 pip install python-dateutil
+pip install requests
+pip install beautifulsoup4
 ```
 
 Rename accounts.example.json to accounts.json
