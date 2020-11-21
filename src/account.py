@@ -20,9 +20,10 @@ class Account:
 
 class BanStatus:
 
-    def __init__(self, banned, permanent, expires):
+    def __init__(self, banned, permanent, seasonal, expires):
         self.banned = banned
         self.permanent = permanent
+        self.seasonal = seasonal
         self.expires = expires
 
     def get_expiration(self):

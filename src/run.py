@@ -9,6 +9,9 @@ from profilescraper import *
 from tabulate import tabulate
 from threading import Thread
 
+LEGEND_BAN_SEASONAL = '†'
+LEGEND_BAN_PERMANENT = '††'
+
 config = None
 with open('config/config.json') as json_file:
     config = json.load(json_file)
@@ -48,6 +51,7 @@ def get_accounts():
                 a['sms_protected'],
                 BanStatus(a['ban_status']['banned'],
                 a['ban_status']['permanent'],
+                a['ban_status']['seasonal'],
                 a['ban_status']['expires']))
             accounts.append(account)
             account_index = account_index + 1
@@ -70,7 +74,7 @@ def get_avg_sr(accounts, role):
         return '-'
 
 
-def print_table():
+def print_account_table():
 
     headers = ['']
 
@@ -94,10 +98,9 @@ def print_table():
         headers.append('Damage')
     if config['columns']['support']:
         headers.append('Support')
-
-    print('')
     print(tabulate(data, headers=headers))
-    print('')
+
+def print_stats():
     print(tabulate([[sum(a.level if a.level is not None else 0 for a in accounts),
                      get_avg_sr(accounts,
                                 "tank"),
@@ -109,6 +112,10 @@ def print_table():
                             'Tank Avg',
                             'Damage Avg',
                             'Support Avg']))
+
+def print_legend():
+    print("%s Seasonal Ban" % (LEGEND_BAN_SEASONAL))
+    print("%s Permanent Ban" % (LEGEND_BAN_PERMANENT))
 
 
 def prompt_action():
@@ -198,8 +205,10 @@ if __name__ == "__main__":
         if config['columns']['banned']:
             msg = 'Yes' if account.ban_status.banned else 'No'
             if account.ban_status.banned:
-                if account.ban_status.permanent:
-                    msg = "%s (Permanent)" % (msg)
+                if account.ban_status.seasonal:
+                    msg = "%s%s" % (msg, LEGEND_BAN_SEASONAL)
+                elif account.ban_status.permanent:
+                    msg = "%s%s" % (msg, LEGEND_BAN_PERMANENT)
                 else:
                     msg = "%s (%s)" % (msg, account.ban_status.get_expiration().strftime(config['date_format']))
             row_data.append(msg)
@@ -217,7 +226,11 @@ if __name__ == "__main__":
     tabulate.WIDE_CHARS_MODE = False
 
     while True:
-        print_table()
+        print_account_table()
+        print('')
+        print_legend()
+        print('')
+        print_stats()
         time.sleep(0.5)
         prompt_action()
 

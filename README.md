@@ -29,6 +29,7 @@ Example format:
             "ban_status": {
                 "banned": false,
                 "permanent": false,
+                "seasonal": false,
                 "expires": ""
             }
         },
@@ -42,6 +43,7 @@ Example format:
             "ban_status": {
                 "banned": false,
                 "permanent": false,
+                "seasonal": false,
                 "expires": ""
             }
         }
