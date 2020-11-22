@@ -5,17 +5,13 @@ import json
 import pyperclip
 import time
 from account import Account, BanStatus
+from console import clear
 from profilescraper import *
 from tabulate import tabulate
 from threading import Thread
 
 LEGEND_BAN_SEASONAL = '†'
 LEGEND_BAN_PERMANENT = '††'
-
-config = None
-with open('config/config.json') as json_file:
-    config = json.load(json_file)
-
 
 def mask_battletag(battletag):
     split = battletag.split('#')
@@ -98,7 +94,48 @@ def print_account_table():
         headers.append('Damage')
     if config['columns']['support']:
         headers.append('Support')
-    print(tabulate(data, headers=headers))
+
+    table_data = []
+    for account in accounts:
+
+        row_data = []
+
+        row_data.append(account.id)
+
+        if config['columns']['email']:
+            row_data.append(mask_email(account.email) if config['mask_emails'] else account.email)
+        if config['columns']['battletag']:
+            row_data.append(mask_battletag(account.battletag) if config['mask_battletags'] else account.battletag)
+        if config['columns']['country']:
+            row_data.append(account.country)
+        if config['columns']['created']:
+            row_data.append(account.created)
+        if config['columns']['sms']:
+            row_data.append('Yes' if account.sms_protected else 'No')
+        if config['columns']['banned']:
+            msg = 'Yes' if account.ban_status.banned else 'No'
+            if account.ban_status.banned:
+                if account.ban_status.seasonal:
+                    msg = "%s%s" % (msg, LEGEND_BAN_SEASONAL)
+                elif account.ban_status.permanent:
+                    msg = "%s%s" % (msg, LEGEND_BAN_PERMANENT)
+                else:
+                    msg = "%s (%s)" % (msg, account.ban_status.get_expiration().strftime(config['date_format']))
+            row_data.append(msg)
+        if config['columns']['level']:
+            row_data.append(account.level)
+        if config['columns']['tank']:
+            row_data.append(account.tank_rating if account.tank_rating else '-')
+        if config['columns']['damage']:
+            row_data.append(account.damage_rating if account.damage_rating else '-')
+        if config['columns']['support']:
+            row_data.append(account.support_rating if account.support_rating else '-')
+
+        clear()
+        table_data.append(row_data)
+
+    tabulate.WIDE_CHARS_MODE = False
+    print(tabulate(table_data, headers=headers))
 
 def print_stats():
     print(tabulate([[sum(a.level if a.level is not None else 0 for a in accounts),
@@ -119,17 +156,20 @@ def print_legend():
 
 
 def prompt_action():
-    valid_id = False
-    while not valid_id:
+    value = input("\nSelect an account by the ID: ")
+    if value == '': # enter, refresh list
+        print_account_table()
+    else:
         try:
-            id = int(input("\nSelect an account by the ID: "))
+            id = int()
             account = accounts[id - 1]
-            valid_id = True
+            prompt_account_actions(account)    
         except IndexError:
             pass
         except ValueError:
-            pass
+            pass 
 
+def prompt_account_actions(account):
     actions = [
         "[1] Copy email to clipboard",
         "[2] Copy password to clipboard",
@@ -166,14 +206,18 @@ def prompt_action():
         pass
 
     print("Returning to accounts...")
-    time.sleep(0.5)
 
 
-if __name__ == "__main__":
+def load_config():
+    config = None
+    with open('config/config.json') as json_file:
+        config = json.load(json_file)
+    return config
 
-    print("Getting accounts...")
-
-    accounts = get_accounts()
+def update_account_stats(accounts):
+    for i in range (0, len(accounts)):  
+        print("Getting accounts%s" % ("." * i), end="\r")
+        time.sleep(1.5)
 
     threads = []
 
@@ -185,45 +229,12 @@ if __name__ == "__main__":
     for process in threads:
         process.join()
 
-    data = []
-    for account in accounts:
 
-        row_data = []
+if __name__ == "__main__":
 
-        row_data.append(account.id)
-
-        if config['columns']['email']:
-            row_data.append(mask_email(account.email) if config['mask_emails'] else account.email)
-        if config['columns']['battletag']:
-            row_data.append(mask_battletag(account.battletag) if config['mask_battletags'] else account.battletag)
-        if config['columns']['country']:
-            row_data.append(account.country)
-        if config['columns']['created']:
-            row_data.append(account.created)
-        if config['columns']['sms']:
-            row_data.append('Yes' if account.sms_protected else 'No')
-        if config['columns']['banned']:
-            msg = 'Yes' if account.ban_status.banned else 'No'
-            if account.ban_status.banned:
-                if account.ban_status.seasonal:
-                    msg = "%s%s" % (msg, LEGEND_BAN_SEASONAL)
-                elif account.ban_status.permanent:
-                    msg = "%s%s" % (msg, LEGEND_BAN_PERMANENT)
-                else:
-                    msg = "%s (%s)" % (msg, account.ban_status.get_expiration().strftime(config['date_format']))
-            row_data.append(msg)
-        if config['columns']['level']:
-            row_data.append(account.level)
-        if config['columns']['tank']:
-            row_data.append(account.tank_rating if account.tank_rating else '-')
-        if config['columns']['damage']:
-            row_data.append(account.damage_rating if account.damage_rating else '-')
-        if config['columns']['support']:
-            row_data.append(account.support_rating if account.support_rating else '-')
-
-        data.append(row_data)
-
-    tabulate.WIDE_CHARS_MODE = False
+    config = load_config()
+    accounts = get_accounts()
+    update_account_stats(accounts)
 
     while True:
         print_account_table()
