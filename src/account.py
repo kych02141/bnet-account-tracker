@@ -12,11 +12,6 @@ class Account:
         self.created = created
         self.sms_protected = sms_protected
         self.ban_status = ban_status
-        self.level = None
-        self.public = False
-        self.tank_rating = None
-        self.damage_rating = None
-        self.support_rating = None
 
 class BanStatus:
 

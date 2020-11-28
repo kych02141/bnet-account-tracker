@@ -2,6 +2,7 @@ import requests
 import urllib.parse
 from bs4 import BeautifulSoup
 from prestige import PRESTIGE_BORDERS, PRESTIGE_STARS
+from profile import CareerProfile
 
 def get_prestige_level(level, border_hash, star_hash):
     prestige = 0
@@ -15,8 +16,10 @@ def get_prestige_level(level, border_hash, star_hash):
     return level + (prestige * 100)
 
 
-def get_account_stats(account):
+def get_career_profile(account):
 
+    account.profile = CareerProfile()
+    
     x = account.battletag.split('#')
     name = urllib.parse.quote_plus(x[0])
     id = x[1]
@@ -39,19 +42,19 @@ def get_account_stats(account):
         else:
             star_hash = None
 
-        account.level = get_prestige_level(level, border_hash, star_hash)
+        account.profile.level = get_prestige_level(level, border_hash, star_hash)
 
         tank_result = soup.find(
             "div", {"data-ow-tooltip-text": "Tank Skill Rating"})
         if tank_result:
-            account.tank_rating = tank_result.nextSibling.text
+            account.profile.tank_rating = tank_result.nextSibling.text
 
         damage_result = soup.find(
             "div", {"data-ow-tooltip-text": "Damage Skill Rating"})
         if damage_result:
-            account.damage_rating = damage_result.nextSibling.text
+            account.profile.damage_rating = damage_result.nextSibling.text
 
         support_result = soup.find(
             "div", {"data-ow-tooltip-text": "Support Skill Rating"})
         if support_result:
-            account.support_rating = support_result.nextSibling.text
+            account.profile.support_rating = support_result.nextSibling.text

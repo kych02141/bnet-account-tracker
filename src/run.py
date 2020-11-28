@@ -6,9 +6,10 @@ import pyperclip
 import time
 from account import Account, BanStatus
 from console import clear
-from profilescraper import *
+from profilescraper import get_career_profile
 from tabulate import tabulate
 from threading import Thread
+import curses
 
 LEGEND_BAN_SEASONAL = '†'
 LEGEND_BAN_PERMANENT = '††'
@@ -59,7 +60,8 @@ def get_avg_sr(accounts, role):
     total_sr = 0
 
     for account in accounts:
-        sr = getattr(account, role + "_rating")
+        profile =  account.profile
+        sr = getattr(profile, role + "_rating")
         if sr:
             placed_accts += 1
             total_sr += int(sr)
@@ -123,13 +125,13 @@ def print_account_table():
                     msg = "%s (%s)" % (msg, account.ban_status.get_expiration().strftime(config['date_format']))
             row_data.append(msg)
         if config['columns']['level']:
-            row_data.append(account.level)
+            row_data.append(account.profile.level)
         if config['columns']['tank']:
-            row_data.append(account.tank_rating if account.tank_rating else '-')
+            row_data.append(account.profile.tank_rating if account.profile.tank_rating else '-')
         if config['columns']['damage']:
-            row_data.append(account.damage_rating if account.damage_rating else '-')
+            row_data.append(account.profile.damage_rating if account.profile.damage_rating else '-')
         if config['columns']['support']:
-            row_data.append(account.support_rating if account.support_rating else '-')
+            row_data.append(account.profile.support_rating if account.profile.support_rating else '-')
 
         clear()
         table_data.append(row_data)
@@ -138,7 +140,7 @@ def print_account_table():
     print(tabulate(table_data, headers=headers))
 
 def print_stats():
-    print(tabulate([[sum(a.level if a.level is not None else 0 for a in accounts),
+    print(tabulate([[sum(a.profile.level if a.profile.level is not None else 0 for a in accounts),
                      get_avg_sr(accounts,
                                 "tank"),
                      get_avg_sr(accounts,
@@ -222,7 +224,7 @@ def update_account_stats(accounts):
     threads = []
 
     for account in accounts:
-        process = Thread(target=get_account_stats, args=[account])
+        process = Thread(target=get_career_profile, args=[account])
         process.start()
         threads.append(process)
 
