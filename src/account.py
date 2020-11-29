@@ -1,7 +1,10 @@
 import dateutil.parser
 from datetime import datetime
+from profile import CareerProfile
 
 class Account:
+
+    profile = CareerProfile()
 
     def __init__(self, id, email, battletag, country, password, created, sms_protected, ban_status):
         self.id = id

@@ -30,28 +30,26 @@ def mask_email(email):
                           username[-1:],
                           domain)
 
-def get_accounts():
+def get_accounts(config):
     accounts = []
 
-    with open('config/accounts.json', encoding='utf-8') as json_file:
-        data = json.load(json_file)
-        account_index = 1
-        for a in data:
-
-            account = Account(
-                account_index,
-                a['email'],
-                a['battletag'],
-                a['country'],
-                a['password'],
-                a['created'],
-                a['sms_protected'],
-                BanStatus(a['ban_status']['banned'],
-                a['ban_status']['permanent'],
-                a['ban_status']['seasonal'],
-                a['ban_status']['expires']))
-            accounts.append(account)
-            account_index = account_index + 1
+    accounts_data = config['accounts']
+    account_index = 1
+    for a in accounts_data:
+        account = Account(
+            account_index,
+            a['email'],
+            a['battletag'],
+            a['country'],
+            a['password'],
+            a['created'],
+            a['sms_protected'],
+            BanStatus(a['ban_status']['banned'],
+            a['ban_status']['permanent'],
+            a['ban_status']['seasonal'],
+            a['ban_status']['expires']))
+        account_index = account_index + 1
+        accounts.append(account)
 
     return accounts
 
@@ -212,7 +210,7 @@ def prompt_account_actions(account):
 
 def load_config():
     config = None
-    with open('config/config.json') as json_file:
+    with open('config/config.json', encoding='utf-8') as json_file:
         config = json.load(json_file)
     return config
 
@@ -235,7 +233,7 @@ def update_account_stats(accounts):
 if __name__ == "__main__":
 
     config = load_config()
-    accounts = get_accounts()
+    accounts = get_accounts(config)
     update_account_stats(accounts)
 
     while True:

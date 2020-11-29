@@ -13,5 +13,21 @@
         "damage": true,
         "support": true
     },
-    "date_format": "%m/%d/%Y, %H:%M"
+    "date_format": "%m/%d/%Y, %H:%M",
+    "accounts": [
+        {
+            "email": "krusher99@gmail.com",
+            "battletag": "xQc#11273",
+            "country": "United States",
+            "password": "J2=ztfAbkD]?_t(",
+            "created": "07/01/2016",
+            "sms_protected": true,
+            "ban_status": {
+                "banned": false,
+                "permanent": false,
+                "seasonal": false,
+                "expires": ""
+            }
+        }
+    ]
 }

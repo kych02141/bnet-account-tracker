@@ -15,16 +15,19 @@ def get_prestige_level(level, border_hash, star_hash):
 
     return level + (prestige * 100)
 
+def get_profile_url(battletag):
+    x = battletag.split('#')
+    name = urllib.parse.quote_plus(x[0])
+    id = x[1]
+    url = "https://playoverwatch.com/en-us/career/pc/%s-%s" % (name, id)
+    return url
+
 
 def get_career_profile(account):
 
     account.profile = CareerProfile()
     
-    x = account.battletag.split('#')
-    name = urllib.parse.quote_plus(x[0])
-    id = x[1]
-
-    url = "https://playoverwatch.com/en-us/career/pc/%s-%s" % (name, id)
+    url = get_profile_url(account.battletag)
 
     profile_response = requests.get(url, timeout=5)
     
