@@ -9,7 +9,6 @@ from console import clear
 from profilescraper import get_career_profile
 from tabulate import tabulate
 from threading import Thread
-import curses
 
 LEGEND_BAN_SEASONAL = '†'
 LEGEND_BAN_PERMANENT = '††'
